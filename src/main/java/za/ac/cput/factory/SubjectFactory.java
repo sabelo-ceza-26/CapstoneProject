@@ -1,5 +1,12 @@
-package za.ac.cput.factory;
+/*
+subject.java
+Subject Factory class
+Author:Wendy Bayise
+(222828978)
+Date: 16 March 2026
+*/
 
+package za.ac.cput.factory;
 import za.ac.cput.domain.Subject;
 import za.ac.cput.util.Helper;
 
