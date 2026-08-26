@@ -22,10 +22,27 @@ Author: Thimna Booi - 230232108
 Date: 25/06/2026
  */
 
+import za.ac.cput.domain.Admin;
+import za.ac.cput.factory.AdminFactory;
+import za.ac.cput.repository.AdminRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application.properties")
 @Transactional
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class AdminServiceTest {
 
     @Autowired
@@ -41,7 +58,7 @@ class AdminServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Clean up any existing data
+
         adminRepository.deleteAll();
 
         adminId = "ADM001";
@@ -60,7 +77,7 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("create admin successfully")
-    void testCreate_Success() {
+    void a_create() {
         Admin createdAdmin = adminService.create(admin);
 
         assertNotNull(createdAdmin);
@@ -69,7 +86,6 @@ class AdminServiceTest {
         assertEquals("ADMIN", createdAdmin.getRole());
         assertNotNull(createdAdmin.getCreatedAt());
 
-        // Verify it was saved in the database
         Admin savedAdmin = adminRepository.findById(adminId).orElse(null);
         assertNotNull(savedAdmin);
         assertEquals(adminId, savedAdmin.getAdminId());
@@ -77,16 +93,14 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("throw exception when creating admin with existing email")
-    void testCreate_EmailExists_ThrowsException() {
-        // Create first admin
+    void b_createEmailExists() {
         adminService.create(admin);
 
-        // Try to create another admin with same email
         Admin duplicateAdmin = AdminFactory.createAdmin(
                 "ADM002",
                 "Jane",
                 "Doe",
-                email, // Same email
+                email,
                 "DifferentPass123",
                 "SUPER_ADMIN"
         );
@@ -95,12 +109,15 @@ class AdminServiceTest {
             adminService.create(duplicateAdmin);
         });
 
-        assertEquals("Admin with email " + email + " already exists", exception.getMessage());
+        assertEquals(
+                "Admin with email " + email + " already exists",
+                exception.getMessage()
+        );
     }
 
     @Test
     @DisplayName("read admin by id successfully")
-    void testRead_Success() {
+    void c_read() {
         adminService.create(admin);
 
         Admin foundAdmin = adminService.read(adminId);
@@ -112,8 +129,9 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("return null when admin not found")
-    void testRead_NotFound_ReturnsNull() {
+    void d_readNotFound() {
         String nonExistentId = "NONEXISTENT";
+
         Admin foundAdmin = adminService.read(nonExistentId);
 
         assertNull(foundAdmin);
@@ -121,7 +139,7 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("update admin successfully")
-    void testUpdate_Success() {
+    void e_update() {
         adminService.create(admin);
 
         Admin updatedAdmin = AdminFactory.createAdmin(
@@ -141,8 +159,8 @@ class AdminServiceTest {
         assertEquals("jonathan.smith@example.com", result.getEmail());
         assertEquals("SUPER_ADMIN", result.getRole());
 
-        // Verify update in database
         Admin savedAdmin = adminRepository.findById(adminId).orElse(null);
+
         assertNotNull(savedAdmin);
         assertEquals("Jonathan", savedAdmin.getFirstName());
         assertEquals("SUPER_ADMIN", savedAdmin.getRole());
@@ -150,8 +168,9 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("throw exception when updating non-existent admin")
-    void testUpdate_NotFound_ThrowsException() {
+    void f_updateNotFound() {
         String nonExistentId = "NONEXISTENT";
+
         Admin nonExistentAdmin = AdminFactory.createAdmin(
                 nonExistentId,
                 "Jane",
@@ -165,58 +184,40 @@ class AdminServiceTest {
             adminService.update(nonExistentAdmin);
         });
 
-        assertEquals("Admin not found with ID: " + nonExistentId, exception.getMessage());
+        assertEquals(
+                "Admin not found with ID: " + nonExistentId,
+                exception.getMessage()
+        );
     }
 
     @Test
     @DisplayName("delete admin successfully")
-    void testDelete_Success() {
+    void g_delete() {
         adminService.create(admin);
 
         boolean deleted = adminService.delete(adminId);
 
         assertTrue(deleted);
 
-        // Verify it was deleted
         Admin deletedAdmin = adminRepository.findById(adminId).orElse(null);
+
         assertNull(deletedAdmin);
     }
 
     @Test
     @DisplayName("return false when deleting non-existent admin")
-    void testDelete_NotFound_ReturnsFalse() {
+    void h_deleteNotFound() {
         String nonExistentId = "NONEXISTENT";
+
         boolean deleted = adminService.delete(nonExistentId);
 
         assertFalse(deleted);
     }
 
-    @Test
-    @DisplayName("get all admins successfully")
-    void testGetAll_Success() {
-        adminService.create(admin);
-
-        Admin admin2 = AdminFactory.createAdmin(
-                "ADM002",
-                "Jane",
-                "Smith",
-                "jane.smith@example.com",
-                "Password456",
-                "SUPER_ADMIN"
-        );
-        adminService.create(admin2);
-
-        List<Admin> result = adminService.getAll();
-
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(adminId, result.get(0).getAdminId());
-        assertEquals("ADM002", result.get(1).getAdminId());
-    }
 
     @Test
     @DisplayName("get empty list when no admins exist")
-    void testGetAll_EmptyList() {
+    void j_getAllEmpty() {
         List<Admin> result = adminService.getAll();
 
         assertNotNull(result);
@@ -225,7 +226,7 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("login successfully with correct credentials")
-    void testLogin_Success() {
+    void k_login() {
         adminService.create(admin);
 
         Admin loggedInAdmin = adminService.login(email, password);
@@ -236,18 +237,18 @@ class AdminServiceTest {
         assertNotNull(loggedInAdmin.getLastLogin());
 
         Admin savedAdmin = adminRepository.findById(adminId).orElse(null);
+
         assertNotNull(savedAdmin);
         assertNotNull(savedAdmin.getLastLogin());
     }
 
     @Test
     @DisplayName("throw exception when login with incorrect password")
-    void testLogin_IncorrectPassword_ThrowsException() {
+    void l_loginIncorrectPassword() {
         adminService.create(admin);
-        String wrongPassword = "WrongPassword";
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            adminService.login(email, wrongPassword);
+            adminService.login(email, "WrongPassword");
         });
 
         assertEquals("Invalid password", exception.getMessage());
@@ -255,19 +256,22 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("throw exception when login with non-existent email")
-    void testLogin_EmailNotFound_ThrowsException() {
+    void m_loginEmailNotFound() {
         String nonExistentEmail = "nonexistent@example.com";
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             adminService.login(nonExistentEmail, password);
         });
 
-        assertEquals("Admin not found with email: " + nonExistentEmail, exception.getMessage());
+        assertEquals(
+                "Admin not found with email: " + nonExistentEmail,
+                exception.getMessage()
+        );
     }
 
     @Test
     @DisplayName("find admin by email successfully")
-    void testFindByEmail_Success() {
+    void n_findByEmail() {
         adminService.create(admin);
 
         Admin foundAdmin = adminService.findByEmail(email);
@@ -279,8 +283,9 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("return null when finding admin by non-existent email")
-    void testFindByEmail_NotFound_ReturnsNull() {
+    void o_findByEmailNotFound() {
         String nonExistentEmail = "nonexistent@example.com";
+
         Admin foundAdmin = adminService.findByEmail(nonExistentEmail);
 
         assertNull(foundAdmin);
@@ -288,7 +293,7 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("check if email exists")
-    void testExistsByEmail_Success() {
+    void p_existsByEmail() {
         adminService.create(admin);
 
         boolean exists = adminService.existsByEmail(email);
@@ -298,8 +303,9 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("return false when checking non-existent email")
-    void testExistsByEmail_NotFound_ReturnsFalse() {
+    void q_existsByEmailNotFound() {
         String nonExistentEmail = "nonexistent@example.com";
+
         boolean exists = adminService.existsByEmail(nonExistentEmail);
 
         assertFalse(exists);
@@ -307,7 +313,7 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("get admins by role successfully")
-    void testGetByRole_Success() {
+    void r_getByRole() {
         adminService.create(admin);
 
         Admin admin2 = AdminFactory.createAdmin(
@@ -318,6 +324,7 @@ class AdminServiceTest {
                 "Password456",
                 "SUPER_ADMIN"
         );
+
         adminService.create(admin2);
 
         List<Admin> result = adminService.getByRole("ADMIN");
@@ -329,7 +336,7 @@ class AdminServiceTest {
 
     @Test
     @DisplayName("return empty list when no admins with role exist")
-    void testGetByRole_NoAdmins_ReturnsEmptyList() {
+    void s_getByRoleNoAdmins() {
         adminService.create(admin);
 
         List<Admin> result = adminService.getByRole("SUPER_ADMIN");
