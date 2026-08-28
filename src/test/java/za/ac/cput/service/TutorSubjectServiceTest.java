@@ -64,7 +64,6 @@ class TutorSubjectServiceTest {
     }
 
     @Test
-    @Transactional
     void a_create() {
         Subject savedSubject = subjectService.create(subject);
         Tutor savedTutor = tutorService.create(tutor);
@@ -83,7 +82,6 @@ class TutorSubjectServiceTest {
     }
 
     @Test
-    @Transactional
     void b_read() {
         TutorSubjectId id = new TutorSubjectId(
                 "ADP362S",
@@ -99,7 +97,6 @@ class TutorSubjectServiceTest {
     }
 
     @Test
-    @Transactional
     void c_update() {
         TutorSubject newTutorSubject = new TutorSubject.Builder()
                 .setSubjectCode("ADP362S")
@@ -127,7 +124,6 @@ class TutorSubjectServiceTest {
 
 
     @Test
-    @Transactional
     void d_getAll() {
         System.out.println(service.getAll());
     }
