@@ -28,10 +28,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.MethodName.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TutorSubjectControllerTest {
 
-    private static TutorSubject tutorSubject;
+    private TutorSubject tutorSubject;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -41,8 +40,8 @@ class TutorSubjectControllerTest {
     private TutorService tutorService;
     private static final String BASE_URL = "http://localhost:8080/tutoring/tutorsubject";
 
-    @BeforeAll
-    public void setUp(@Autowired SubjectService subjectService, @Autowired TutorService tutorService) {
+    @BeforeEach
+    public void setUp() {
 
         Subject subject = subjectService.create(SubjectFactory.createSubject(
                 "ADP362S",
