@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.*;
 import za.ac.cput.factory.SubjectFactory;
 import za.ac.cput.factory.TutorFactory;
@@ -27,6 +28,10 @@ class TutorSubjectServiceTest {
 
     @Autowired
     private TutorSubjectService service;
+    @Autowired
+    private SubjectService subjectService;
+    @Autowired
+    private TutorService tutorService;
     private static final List<Booking> bookings = new ArrayList<>();
 
     private static final Tutor tutor = TutorFactory.createTutor(
@@ -59,32 +64,49 @@ class TutorSubjectServiceTest {
     }
 
     @Test
+    @Transactional
     void a_create() {
-        TutorSubject created = service.create(tutorSubject);
+        Subject savedSubject = subjectService.create(subject);
+        Tutor savedTutor = tutorService.create(tutor);
+        
+        TutorSubject testTutorSubject = new TutorSubject.Builder()
+                .setSubjectCode(savedSubject.getSubjectCode())
+                .setTutorId(savedTutor.getTutorId())
+                .setYearsTaught(5)
+                .setSubject(savedSubject)
+                .setTutor(savedTutor)
+                .build();
+        
+        TutorSubject created = service.create(testTutorSubject);
         assertNotNull(created);
         System.out.println(created);
     }
 
     @Test
+    @Transactional
     void b_read() {
         TutorSubjectId id = new TutorSubjectId(
-                tutorSubject.getSubjectCode(),
-                tutorSubject.getTutorId()
+                "ADP362S",
+                "T001"
         );
 
         TutorSubject found = service.read(id);
 
         assertNotNull(found);
-        assertEquals(tutorSubject.getSubjectCode(), found.getSubjectCode());
-        assertEquals(tutorSubject.getTutorId(), found.getTutorId());
+        assertEquals("ADP362S", found.getSubjectCode());
+        assertEquals("T001", found.getTutorId());
         System.out.println(found);
     }
 
     @Test
+    @Transactional
     void c_update() {
         TutorSubject newTutorSubject = new TutorSubject.Builder()
-                .copy(tutorSubject)
+                .setSubjectCode("ADP362S")
+                .setTutorId("T001")
                 .setYearsTaught(10)
+                .setSubject(subject)
+                .setTutor(tutor)
                 .build();
 
         TutorSubject updated = service.update(newTutorSubject);
@@ -105,6 +127,7 @@ class TutorSubjectServiceTest {
 
 
     @Test
+    @Transactional
     void d_getAll() {
         System.out.println(service.getAll());
     }

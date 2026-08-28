@@ -19,7 +19,6 @@ public class Admin {
     private String lastName;
     private String email;
     private String password;
-    private  String role;
     private LocalDateTime createdAt;
     private LocalDateTime lastLogin;
 
@@ -33,7 +32,6 @@ public class Admin {
         this.lastName = builder.lastName;
         this.email = builder.email;
         this.password = builder.password;
-        this.role = builder.role;
         this.createdAt = builder.createdAt;
         this.lastLogin = builder.lastLogin;
     }
@@ -43,7 +41,6 @@ public class Admin {
     public String getLastName() { return lastName; }
     public String getEmail() { return email; }
     public String getPassword() { return password; }
-    public String getRole() { return role; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getLastLogin() { return lastLogin; }
 
@@ -52,7 +49,6 @@ public class Admin {
     public void setLastName(String lastName) { this.lastName = lastName; }
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
-    public void setRole(String role) { this.role = role; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
 
@@ -63,7 +59,6 @@ public class Admin {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", role='" + role + '\'' +
                 '}';
     }
 
@@ -74,7 +69,6 @@ public class Admin {
         private String lastName;
         private String email;
         private String password;
-        private String role;
         private LocalDateTime createdAt;
         private LocalDateTime lastLogin;
 
@@ -103,11 +97,6 @@ public class Admin {
             return this;
         }
 
-        public Builder setRole(String role) {
-            this.role = role;
-            return this;
-        }
-
         public Builder setCreatedAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
@@ -124,7 +113,6 @@ public class Admin {
             this.lastName = admin.lastName;
             this.email = admin.email;
             this.password = admin.password;
-            this.role = admin.role;
             this.createdAt = admin.createdAt;
             this.lastLogin = admin.lastLogin;
             return this;

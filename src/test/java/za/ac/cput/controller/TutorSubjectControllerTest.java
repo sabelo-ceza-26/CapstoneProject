@@ -8,41 +8,50 @@ Date: 28/06/2026
 */
 
 import org.junit.jupiter.api.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.TutorSubject;
 import za.ac.cput.domain.Tutor;
 import za.ac.cput.domain.Subject;
 import za.ac.cput.factory.SubjectFactory;
 import za.ac.cput.factory.TutorFactory;
 import za.ac.cput.factory.TutorSubjectFactory;
+import za.ac.cput.service.SubjectService;
+import za.ac.cput.service.TutorService;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.MethodName.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TutorSubjectControllerTest {
 
     private static TutorSubject tutorSubject;
 
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private SubjectService subjectService;
+    @Autowired
+    private TutorService tutorService;
     private static final String BASE_URL = "http://localhost:8080/tutoring/tutorsubject";
 
     @BeforeAll
-    public static void setUp() {
+    public void setUp(@Autowired SubjectService subjectService, @Autowired TutorService tutorService) {
 
-        Subject subject = SubjectFactory.createSubject(
+        Subject subject = subjectService.create(SubjectFactory.createSubject(
                 "ADP362S",
                 "Application Development Practice",
                 "Programming Module",
                 "3rd Year"
-        );
+        ));
 
-        Tutor tutor = TutorFactory.createTutor(
+        Tutor tutor = tutorService.create(TutorFactory.createTutor(
                 "T987654",
                 "Imaan",
                 "Achmat",
@@ -51,7 +60,7 @@ class TutorSubjectControllerTest {
                 "password",
                 150.0,
                 new ArrayList<>()
-        );
+        ));
 
         tutorSubject = TutorSubjectFactory.createTutorSubject(
                 "ADP362S",

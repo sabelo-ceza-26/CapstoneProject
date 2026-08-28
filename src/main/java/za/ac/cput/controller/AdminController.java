@@ -1,10 +1,11 @@
 package za.ac.cput.controller;
-import za.ac.cput.domain.*;
-import za.ac.cput.service.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import za.ac.cput.domain.Admin;
+import za.ac.cput.service.AdminService;
+
 import java.util.List;
 
 /*
@@ -16,47 +17,42 @@ Date: 28/06/2026
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(origins = "*")
 public class AdminController {
 
-    @Autowired
     private AdminService adminService;
 
-    @PostMapping("/register")
-    public ResponseEntity<Admin> registerAdmin(@RequestBody Admin admin) {
-        return new ResponseEntity<>(adminService.create(admin), HttpStatus.CREATED);
+    @Autowired
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Admin> loginAdmin(@RequestParam String email, @RequestParam String password) {
-        return ResponseEntity.ok(adminService.login(email, password));
+    @PostMapping("/create")
+    public Admin create(@RequestBody Admin admin) {
+        return adminService.create(admin);
     }
 
-    @GetMapping("/admins")
-    public ResponseEntity<List<Admin>> getAllAdmins() {
-        return ResponseEntity.ok(adminService.getAll());
+    @GetMapping("/read/{adminId}")
+    public Admin read(@PathVariable("adminId") String adminId) {
+        return adminService.read(adminId);
     }
 
-    @GetMapping("/admins/{adminId}")
-    public ResponseEntity<Admin> getAdminById(@PathVariable String adminId) {
-        Admin admin = adminService.read(adminId);
-        if (admin == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(admin);
+    @PutMapping("/update")
+    public Admin update(@RequestBody Admin admin) {
+        return adminService.update(admin);
     }
 
-    @PutMapping("/admins")
-    public ResponseEntity<Admin> updateAdmin(@RequestBody Admin admin) {
-        return ResponseEntity.ok(adminService.update(admin));
+    @DeleteMapping("/delete/{adminId}")
+    public void delete(@PathVariable String adminId) {
+        adminService.delete(adminId);
     }
 
-    @DeleteMapping("/admins/{adminId}")
-    public ResponseEntity<Void> deleteAdmin(@PathVariable String adminId) {
-        boolean deleted = adminService.delete(adminId);
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.noContent().build();
+    @GetMapping("/getAll")
+    public List<Admin> getAll() {
+        return adminService.getAll();
+    }
+
+    @GetMapping("/findByEmail/{email}")
+    public Admin findByEmail(@PathVariable String email) {
+        return adminService.findByEmail(email);
     }
 }

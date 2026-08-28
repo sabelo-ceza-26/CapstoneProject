@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.Booking;
 import za.ac.cput.domain.Payment;
 import za.ac.cput.domain.Student;
@@ -19,6 +20,9 @@ import za.ac.cput.factory.BookingFactory;
 import za.ac.cput.factory.PaymentFactory;
 import za.ac.cput.factory.StudentFactory;
 import za.ac.cput.factory.TutorFactory;
+import za.ac.cput.service.BookingService;
+import za.ac.cput.service.StudentService;
+import za.ac.cput.service.TutorService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,17 +32,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.MethodName.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BookingControllerTest {
 
     private static Booking booking;
 
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private StudentService studentService;
+    @Autowired
+    private TutorService tutorService;
+    @Autowired
+    private BookingService bookingService;
     private static final String BASE_URL = "http://localhost:8080/tutoring/booking";
 
     @BeforeAll
-    public static void setUp(){
-        Student student = StudentFactory.createStudent(
+    public void setUp(){
+        Student student = studentService.create(StudentFactory.createStudent(
                 "220094489",
                 "Sabelo",
                 "Ceza",
@@ -47,13 +58,13 @@ class BookingControllerTest {
                 "SabieCeza2026",
                 "Third year",
                 new ArrayList<>()
-        );
+        ));
 
         List<Booking> bookings = new ArrayList<>();
 
-        Tutor tutor = TutorFactory.createTutor("T001", "Imaan", "Achmat",
+        Tutor tutor = tutorService.create(TutorFactory.createTutor("T001", "Imaan", "Achmat",
                 "imaan@gmail.com", "0211377053",
-                "password", 150.0, bookings);
+                "password", 150.0, bookings));
 
         booking = BookingFactory.createBooking(
                 "B12345",

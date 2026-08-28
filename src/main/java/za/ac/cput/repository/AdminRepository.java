@@ -13,14 +13,6 @@ Date: 20/03/2026
  */
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, String> {
-
     Optional<Admin> findByEmail(String email);
 
-    @Query("SELECT a FROM Admin a WHERE a.role = :role")
-    List<Admin> findByRole(String role);
-
-    boolean existsByEmail(String email);
-
-    @Query("SELECT a FROM Admin a ORDER BY a.createdAt DESC")
-    List<Admin> findAllOrderByCreatedAtDesc();
 }

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import za.ac.cput.domain.Booking;
 import za.ac.cput.domain.Payment;
 import za.ac.cput.domain.Student;
@@ -32,6 +33,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookingServiceTest {
     @Autowired
     private BookingService service;
+    @Autowired
+    private StudentService studentService;
+    @Autowired
+    private TutorService tutorService;
+    @Autowired
+    private PaymentService paymentService;
     Student student = StudentFactory.createStudent(
             "220094489",
             "Sabelo",
@@ -70,23 +77,54 @@ class BookingServiceTest {
     );
 
     @Test
+    @Transactional
     void a_create() {
+        Student savedStudent = studentService.create(StudentFactory.createStudent(
+                "220094489",
+                "Sabelo",
+                "Ceza",
+                "220094489@mycput.ac.za",
+                "073 985 1110",
+                "SabieCeza2026",
+                "Third year",
+                new ArrayList<>()
+        ));
+        
+        Tutor savedTutor = tutorService.create(TutorFactory.createTutor("T001", "Imaan", "Achmat",
+                "imaan@gmail.com", "0211377053",
+                "password", 150.0, new ArrayList<>()));
+        
+        Booking booking = BookingFactory.createBooking(
+                "B12345",
+                "ADP362S",
+                "Online",
+                "2 hours",
+                LocalDateTime.of(2026, 5, 20, 10, 30),
+                savedStudent,
+                savedTutor,
+                null
+        );
+        
         Booking created = service.create(booking);
         assertNotNull(created);
         System.out.println(created);
     }
 
     @Test
+    @Transactional
     void b_read() {
-        Booking read = service.read(booking.getBookingId());
+        Booking read = service.read("B12345");
         assertNotNull(read);
         System.out.println(read);
     }
 
     @Test
+    @Transactional
     void c_update() {
+        Booking existing = service.read("B12345");
+        
         Booking newBooking = new Booking.Builder()
-                .copy(booking)
+                .copy(existing)
                 .setSessionType("Online")
                 .setDuration("3 hours")
                 .build();
@@ -106,6 +144,7 @@ class BookingServiceTest {
     }
 
     @Test
+    @Transactional
     void d_getAll() {
         System.out.println(service.getAll());
     }

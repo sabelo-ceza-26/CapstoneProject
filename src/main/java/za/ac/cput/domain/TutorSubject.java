@@ -21,12 +21,12 @@ public class TutorSubject {
     private String tutorId;
 
     private int yearsTaught;
-    @ManyToOne
-    @JoinColumn(name = "subjectCode", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "subjectCode", referencedColumnName = "subjectCode", insertable = false, updatable = false)
     private Subject subject;
 
-    @ManyToOne
-    @JoinColumn(name = "tutorId", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "tutorId", referencedColumnName = "tutorId", insertable = false, updatable = false)
     private Tutor tutor;
 
 
