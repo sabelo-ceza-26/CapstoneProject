@@ -77,7 +77,6 @@ class BookingServiceTest {
     );
 
     @Test
-    @Transactional
     void a_create() {
         Student savedStudent = studentService.create(StudentFactory.createStudent(
                 "220094489",
@@ -111,7 +110,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @Transactional
     void b_read() {
         Booking read = service.read("B12345");
         assertNotNull(read);
@@ -119,7 +117,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @Transactional
     void c_update() {
         Booking existing = service.read("B12345");
         
@@ -144,7 +141,6 @@ class BookingServiceTest {
     }
 
     @Test
-    @Transactional
     void d_getAll() {
         System.out.println(service.getAll());
     }
